@@ -4,6 +4,7 @@ const db = require('./config/db');
 const { notFoundHandler, errorHandler } = require('./middleware/errorMiddleware');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const groupRoutes = require('./routes/groupRoutes');
 
 const app = express();
 
@@ -31,9 +32,9 @@ app.get('/api/health', (req, res) => {
 // ---- API routes ----
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/groups', groupRoutes);
 /*
  * Added in later parts:
- *   Part 3: app.use('/api/groups', groupRoutes);
  *   Part 4: app.use('/api', expenseRoutes);
  *   Part 5: app.use('/api', settlementRoutes);
  *   Part 6: app.use('/api', historyRoutes);
