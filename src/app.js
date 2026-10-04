@@ -2,6 +2,8 @@ const path = require('path');
 const express = require('express');
 const db = require('./config/db');
 const { notFoundHandler, errorHandler } = require('./middleware/errorMiddleware');
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
@@ -26,9 +28,11 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', database: row.ok === 1 ? 'connected' : 'error' });
 });
 
+// ---- API routes ----
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 /*
- * API routes are mounted here as each part is added:
- *   Part 2: app.use('/api/auth', authRoutes); app.use('/api/users', userRoutes);
+ * Added in later parts:
  *   Part 3: app.use('/api/groups', groupRoutes);
  *   Part 4: app.use('/api', expenseRoutes);
  *   Part 5: app.use('/api', settlementRoutes);
