@@ -132,6 +132,7 @@ CREATE INDEX IF NOT EXISTS idx_expense_splits_user   ON expense_splits(user_id);
 CREATE INDEX IF NOT EXISTS idx_settlements_group     ON settlements(group_id);
 CREATE INDEX IF NOT EXISTS idx_audit_group_created   ON audit_logs(group_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_revoked_expires       ON revoked_tokens(expires_at);
+CREATE INDEX IF NOT EXISTS idx_idempotency_created ON idempotency_keys(created_at);
 `;
 
 db.exec(schema);
