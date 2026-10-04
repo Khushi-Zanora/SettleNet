@@ -5,6 +5,7 @@ const { notFoundHandler, errorHandler } = require('./middleware/errorMiddleware'
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const groupRoutes = require('./routes/groupRoutes');
+const expenseRoutes = require('./routes/expenseRoutes');
 
 const app = express();
 
@@ -33,9 +34,9 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/groups', groupRoutes);
+app.use('/api', expenseRoutes);
 /*
  * Added in later parts:
- *   Part 4: app.use('/api', expenseRoutes);
  *   Part 5: app.use('/api', settlementRoutes);
  *   Part 6: app.use('/api', historyRoutes);
  */
