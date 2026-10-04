@@ -1,3 +1,5 @@
+const money = require('./money');
+
 // Pragmatic email check: something@something.tld, no spaces, sane length.
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -14,6 +16,16 @@ function parseIdParam(value) {
   if (!isString(value) || !/^\d+$/.test(value)) return null;
   const n = Number(value);
   return Number.isSafeInteger(n) && n > 0 ? n : null;
+}
+
+// Accepts only real calendar dates written as YYYY-MM-DD ("2026-02-30" is rejected).
+function isValidDateString(v) {
+  if (!isString(v)) return false;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
+  if (!m) return false;
+  const [year, month, day] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  const d = new Date(Date.UTC(year, month - 1, day));
+  return d.getUTCFullYear() === year && d.getUTCMonth() === month - 1 && d.getUTCDate() === day;
 }
 
 // bcrypt only uses the first 72 bytes of a password, so we cap the length there.
@@ -76,14 +88,82 @@ function addMemberRules(req) {
   return [];
 }
 
+// Used for both creating (POST) and editing (PUT) an expense.
+function expenseRules(req) {
+  const body = req.body || {};
+  const errors = [];
+
+  if (!isNonEmptyString(body.description) || body.description.trim().length > 200) {
+    errors.push({ field: 'description', message: 'Description is required (max 200 characters)' });
+  }
+
+  if (body.category !== undefined && body.category !== null) {
+    if (!isNonEmptyString(body.category) || body.category.trim().length > 50) {
+      errors.push({ field: 'category', message: 'Category must be text of at most 50 characters' });
+    }
+  }
+
+  const amountMinor = money.parseMoney(body.amount);
+  if (amountMinor === null) {
+    errors.push({ field: 'amount', message: 'Amount must be a number with at most 2 decimals, e.g. "1200.50"' });
+  } else if (amountMinor <= 0) {
+    errors.push({ field: 'amount', message: 'Amount must be greater than zero' });
+  } else if (amountMinor > money.MAX_AMOUNT_MINOR) {
+    errors.push({ field: 'amount', message: 'Amount is too large' });
+  }
+
+  if (!Number.isSafeInteger(body.paid_by) || body.paid_by <= 0) {
+    errors.push({ field: 'paid_by', message: 'paid_by must be the numeric id of the payer' });
+  }
+
+  const methods = ['equal', 'exact', 'percentage', 'custom'];
+  if (!methods.includes(body.split_method)) {
+    errors.push({ field: 'split_method', message: `split_method must be one of: ${methods.join(', ')}` });
+  }
+
+  if (body.expense_date !== undefined && body.expense_date !== null && !isValidDateString(body.expense_date)) {
+    errors.push({ field: 'expense_date', message: 'expense_date must be a real date in YYYY-MM-DD format' });
+  }
+
+  // Shape only here; membership and totals are checked by splitService.
+  if (body.splits !== undefined && body.splits !== null) {
+    if (!Array.isArray(body.splits) || body.splits.length === 0 || body.splits.length > 100) {
+      errors.push({ field: 'splits', message: 'splits must be a list of 1 to 100 entries' });
+    } else if (!body.splits.every((s) => s && typeof s === 'object' && !Array.isArray(s))) {
+      errors.push({ field: 'splits', message: 'Each split must be an object like { "user_id": 1, "value": "100.00" }' });
+    }
+  } else if (body.split_method !== 'equal') {
+    errors.push({ field: 'splits', message: 'splits are required unless split_method is "equal"' });
+  }
+
+  return errors;
+}
+
+// GET /groups/:id/expenses?limit=20&offset=0
+function listExpensesQueryRules(req) {
+  const { limit, offset } = req.query;
+  const errors = [];
+
+  if (limit !== undefined && !(/^\d+$/.test(String(limit)) && Number(limit) >= 1 && Number(limit) <= 100)) {
+    errors.push({ field: 'limit', message: 'limit must be a whole number from 1 to 100' });
+  }
+  if (offset !== undefined && !/^\d+$/.test(String(offset))) {
+    errors.push({ field: 'offset', message: 'offset must be a whole number of 0 or more' });
+  }
+  return errors;
+}
+
 module.exports = {
   isString,
   isNonEmptyString,
   isValidEmail,
+  isValidDateString,
   parseIdParam,
   passwordProblems,
   registerRules,
   loginRules,
   createGroupRules,
   addMemberRules,
+  expenseRules,
+  listExpensesQueryRules,
 };
