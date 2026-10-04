@@ -1,0 +1,1169 @@
+{
+  "info": {
+    "name": "SettleNet API",
+    "description": "REST API tests for SettleNet. Start the server (npm run dev), then run the folders in order. Scripts save the token and ids as collection variables, so requests chain automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "ownerEmail",
+      "value": "khushi.postman@example.com"
+    },
+    {
+      "key": "memberEmail",
+      "value": "riya.postman@example.com"
+    },
+    {
+      "key": "password",
+      "value": "Secret123"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "memberToken",
+      "value": ""
+    },
+    {
+      "key": "memberId",
+      "value": ""
+    },
+    {
+      "key": "groupId",
+      "value": ""
+    },
+    {
+      "key": "expenseId",
+      "value": ""
+    },
+    {
+      "key": "expenseKey",
+      "value": ""
+    },
+    {
+      "key": "idempotencyKey",
+      "value": ""
+    },
+    {
+      "key": "settleFrom",
+      "value": ""
+    },
+    {
+      "key": "settleTo",
+      "value": ""
+    },
+    {
+      "key": "settleAmount",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Auth",
+      "description": "Register and log in. Run these first. Registering twice returns 409; just log in instead.",
+      "item": [
+        {
+          "name": "Register (owner)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201 or 409', () => pm.expect([201, 409]).to.include(pm.response.code));",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.collectionVariables.set('token', data.token);",
+                  "  pm.collectionVariables.set('userId', data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Khushi\",\n  \"email\": \"{{ownerEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Register (member)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201 or 409', () => pm.expect([201, 409]).to.include(pm.response.code));",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.collectionVariables.set('memberToken', data.token);",
+                  "  pm.collectionVariables.set('memberId', data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Riya\",\n  \"email\": \"{{memberEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Login (owner)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.collectionVariables.set('token', data.token);",
+                  "  pm.collectionVariables.set('userId', data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{ownerEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Login (member)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.collectionVariables.set('memberToken', data.token);",
+                  "  pm.collectionVariables.set('memberId', data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{memberEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Users",
+      "description": null,
+      "item": [
+        {
+          "name": "Get profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('No password in response', () => pm.expect(pm.response.text()).to.not.include('password'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/users/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Groups",
+      "description": null,
+      "item": [
+        {
+          "name": "Create group",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('idempotencyKey', pm.variables.replaceIn('{{$guid}}'));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('groupId', pm.response.json().data.group.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotencyKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/groups",
+            "description": "Idempotent: a fresh Idempotency-Key is generated before each send.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Goa Trip\",\n  \"description\": \"Beach trip with friends\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Get my groups",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/groups"
+          }
+        },
+        {
+          "name": "Get group",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}"
+          }
+        },
+        {
+          "name": "Add member",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201 or 409', () => pm.expect([201, 409]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/members",
+            "description": "Admin only. The user must already be registered.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{memberEmail}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Expenses",
+      "description": "Run in order. The first two requests demonstrate idempotency.",
+      "item": [
+        {
+          "name": "Create expense: equal split",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('expenseKey', pm.variables.replaceIn('{{$guid}}'));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "if (body.data && body.data.expense) pm.collectionVariables.set('expenseId', body.data.expense.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{expenseKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/expenses",
+            "description": "Generates a new key and stores it as {{expenseKey}}. Equal split among all members when \"splits\" is omitted.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Dinner at the beach shack\",\n  \"category\": \"food\",\n  \"amount\": \"1000.00\",\n  \"paid_by\": {{userId}},\n  \"split_method\": \"equal\",\n  \"expense_date\": \"2026-10-03\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Create expense: replay same key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Served as a replay', () => pm.response.to.have.header('Idempotent-Replay', 'true'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{expenseKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/expenses",
+            "description": "Identical request and identical key. Expect 201, the SAME expense id, and the header Idempotent-Replay: true. No second expense is created.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Dinner at the beach shack\",\n  \"category\": \"food\",\n  \"amount\": \"1000.00\",\n  \"paid_by\": {{userId}},\n  \"split_method\": \"equal\",\n  \"expense_date\": \"2026-10-03\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Create expense: exact split",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('idempotencyKey', pm.variables.replaceIn('{{$guid}}'));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "if (body.data && body.data.expense) pm.collectionVariables.set('expenseId', body.data.expense.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotencyKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/expenses",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Hotel\",\n  \"category\": \"stay\",\n  \"amount\": \"1200.50\",\n  \"paid_by\": {{memberId}},\n  \"split_method\": \"exact\",\n  \"splits\": [\n    { \"user_id\": {{userId}}, \"value\": \"500.25\" },\n    { \"user_id\": {{memberId}}, \"value\": \"700.25\" }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Create expense: percentage split",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('idempotencyKey', pm.variables.replaceIn('{{$guid}}'));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "const shares = pm.response.json().data.expense.splits.reduce((sum, s) => sum + s.share_minor, 0);",
+                  "pm.test('Shares add up to the total exactly', () => pm.expect(shares).to.equal(99999));",
+                  "const body = pm.response.json();",
+                  "if (body.data && body.data.expense) pm.collectionVariables.set('expenseId', body.data.expense.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotencyKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/expenses",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Taxi to the airport\",\n  \"category\": \"transport\",\n  \"amount\": \"999.99\",\n  \"paid_by\": {{userId}},\n  \"split_method\": \"percentage\",\n  \"splits\": [\n    { \"user_id\": {{userId}}, \"value\": \"60\" },\n    { \"user_id\": {{memberId}}, \"value\": \"40\" }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Create expense: custom split (weights)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('idempotencyKey', pm.variables.replaceIn('{{$guid}}'));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "if (body.data && body.data.expense) pm.collectionVariables.set('expenseId', body.data.expense.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotencyKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/expenses",
+            "description": "Custom split uses integer weights: weight 2 pays double a weight of 1. This expense is edited and then deleted below.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Villa\",\n  \"category\": \"stay\",\n  \"amount\": \"900.00\",\n  \"paid_by\": {{userId}},\n  \"split_method\": \"custom\",\n  \"splits\": [\n    { \"user_id\": {{userId}}, \"value\": 2 },\n    { \"user_id\": {{memberId}}, \"value\": 1 }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Get expenses (list)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/expenses?limit=20&offset=0"
+          }
+        },
+        {
+          "name": "Get expense (details)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/expenses/{{expenseId}}"
+          }
+        },
+        {
+          "name": "Edit expense",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/expenses/{{expenseId}}",
+            "description": "PUT replaces the whole expense, including its split.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Villa (corrected)\",\n  \"category\": \"stay\",\n  \"amount\": \"1000.00\",\n  \"paid_by\": {{userId}},\n  \"split_method\": \"equal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete expense",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/expenses/{{expenseId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Balances and settlement",
+      "description": null,
+      "item": [
+        {
+          "name": "Get balances",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "const sum = pm.response.json().data.balances.reduce((s, b) => s + b.balance_minor, 0);",
+                  "pm.test('Balances sum to zero', () => pm.expect(sum).to.equal(0));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/balances"
+          }
+        },
+        {
+          "name": "Generate settlement plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json().data;",
+                  "if (data.transfers.length > 0) {",
+                  "  pm.collectionVariables.set('settleFrom', data.transfers[0].from.id);",
+                  "  pm.collectionVariables.set('settleTo', data.transfers[0].to.id);",
+                  "  pm.collectionVariables.set('settleAmount', data.transfers[0].amount);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/settlement",
+            "description": "Computes the minimal-transfer plan from live balances. The first transfer is saved for the next request."
+          }
+        },
+        {
+          "name": "Record payment (first transfer of the plan)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('idempotencyKey', pm.variables.replaceIn('{{$guid}}'));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotencyKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/settlements",
+            "description": "Run \"Generate settlement plan\" first. Records that the payer really paid the receiver. Recording is allowed for the payer, the receiver, or a group admin.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from_user\": {{settleFrom}},\n  \"to_user\": {{settleTo}},\n  \"amount\": \"{{settleAmount}}\",\n  \"note\": \"Paid via UPI\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "List recorded payments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/settlements"
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. History and export",
+      "description": null,
+      "item": [
+        {
+          "name": "Get history",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/history?limit=20&offset=0"
+          }
+        },
+        {
+          "name": "Get history (filtered)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/history?action=EXPENSE_CREATED"
+          }
+        },
+        {
+          "name": "Export statement (CSV, everything)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Is a CSV', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('text/csv'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/export",
+            "description": "Use \"Send and Download\" in Postman to save the file."
+          }
+        },
+        {
+          "name": "Export statement (CSV, balances only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/export?section=balances",
+            "description": "section can be: all, expenses, balances, payments, plan."
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Error examples",
+      "description": "Each request is expected to fail on purpose. A passing test means the API rejected it correctly.",
+      "item": [
+        {
+          "name": "401: no token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/users/me",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "404: group that does not exist",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/groups/999999"
+          }
+        },
+        {
+          "name": "400: negative amount",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/expenses",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Bad\",\n  \"amount\": \"-50.00\",\n  \"paid_by\": {{userId}},\n  \"split_method\": \"equal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "400: exact split does not add up",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/expenses",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Bad\",\n  \"amount\": \"100.00\",\n  \"paid_by\": {{userId}},\n  \"split_method\": \"exact\",\n  \"splits\": [\n    { \"user_id\": {{userId}}, \"value\": \"60.00\" },\n    { \"user_id\": {{memberId}}, \"value\": \"30.00\" }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "400: percentages do not total 100",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/expenses",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Bad\",\n  \"amount\": \"100.00\",\n  \"paid_by\": {{userId}},\n  \"split_method\": \"percentage\",\n  \"splits\": [\n    { \"user_id\": {{userId}}, \"value\": \"60\" },\n    { \"user_id\": {{memberId}}, \"value\": \"30\" }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "409: idempotency key reused with a different request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 409', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{expenseKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/expenses",
+            "description": "Reuses {{expenseKey}} from the first expense, but with a different amount.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Dinner at the beach shack\",\n  \"category\": \"food\",\n  \"amount\": \"5555.00\",\n  \"paid_by\": {{userId}},\n  \"split_method\": \"equal\",\n  \"expense_date\": \"2026-10-03\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Membership and logout",
+      "description": "Run last.",
+      "item": [
+        {
+          "name": "Remove member",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 or 409', () => pm.expect([200, 409]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/groups/{{groupId}}/members/{{memberId}}",
+            "description": "Returns 409 while the member still has an unsettled balance (settle up first), and 200 once they are at zero."
+          }
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/auth/logout",
+            "description": "Revokes the current token. Run \"Login (owner)\" again afterwards."
+          }
+        }
+      ]
+    }
+  ]
+}
