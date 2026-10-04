@@ -4,6 +4,7 @@ const balanceService = require('./balanceService');
 const settlementService = require('./settlementService');
 const audit = require('./auditService');
 const { safeText, toLine } = require('../utils/csv');
+const money = require('../utils/money');
 
 const STATUS_LABEL = { is_owed: 'Gets back', owes: 'Owes', settled: 'Settled' };
 
@@ -67,7 +68,7 @@ function buildSections(data) {
       title: 'Suggested settlement plan',
       header: ['From', 'To', 'Amount (INR)'],
       rows: data.plan.transfers.map((t) => [
-        safeText(nameOf.get(t.fromUser)), safeText(nameOf.get(t.toUser)), require('../utils/money').formatMinor(t.amountMinor),
+        safeText(nameOf.get(t.fromUser)), safeText(nameOf.get(t.toUser)), money.formatMinor(t.amountMinor),
       ]),
       empty: 'Nothing to settle',
     },
