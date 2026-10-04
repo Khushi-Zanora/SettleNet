@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const audit = require('./auditService');
+const balanceService = require('./balanceService');
 const { conflict, forbidden, notFound } = require('../utils/errors');
 
 // NOTE: "groups" is quoted everywhere because GROUPS is a reserved word in SQLite.
@@ -58,31 +59,6 @@ const memberById = db.prepare(`
   FROM group_members gm JOIN users u ON u.id = gm.user_id
   WHERE gm.id = ?
 `);
-
-/*
- * Net balance of one user in one group, in paise.
- *   + paid for expenses     (they fronted money)
- *   - their share of every expense
- *   + settlements they paid (reduces what they owe)
- *   - settlements they received
- * Positive = group owes them. Negative = they owe the group. Zero = settled.
- * Used only to block removing someone who is not settled up. Part 5 adds the
- * full balance service, which will replace this query so there is one source of truth.
- */
-const netBalanceStmt = db.prepare(`
-  SELECT
-    (SELECT COALESCE(SUM(amount_minor), 0) FROM expenses WHERE group_id = @g AND paid_by = @u)
-  - (SELECT COALESCE(SUM(es.share_minor), 0)
-       FROM expense_splits es JOIN expenses e ON e.id = es.expense_id
-      WHERE e.group_id = @g AND es.user_id = @u)
-  + (SELECT COALESCE(SUM(amount_minor), 0) FROM settlements WHERE group_id = @g AND from_user = @u)
-  - (SELECT COALESCE(SUM(amount_minor), 0) FROM settlements WHERE group_id = @g AND to_user = @u)
-    AS net
-`);
-
-function getNetBalanceMinor(groupId, userId) {
-  return netBalanceStmt.get({ g: groupId, u: userId }).net;
-}
 
 // ---- Authorization checks (reused by middleware and by later services) ----
 
@@ -197,7 +173,7 @@ function removeMember(groupId, actor, targetUserId) {
       throw forbidden('Only a group admin can remove other members');
     }
 
-    if (getNetBalanceMinor(groupId, targetUserId) !== 0) {
+    if (balanceService.getNetBalanceMinor(groupId, targetUserId) !== 0) {
       throw conflict('This member still has an unsettled balance. Settle up before removing them.');
     }
 
@@ -220,7 +196,6 @@ function removeMember(groupId, actor, targetUserId) {
 module.exports = {
   assertMember,
   assertAdmin,
-  getNetBalanceMinor,
   getGroupDetails,
   createGroup,
   listGroups,
