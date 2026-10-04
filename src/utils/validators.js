@@ -139,6 +139,37 @@ function expenseRules(req) {
   return errors;
 }
 
+// POST /groups/:id/settlements  -> records a payment that already happened
+function recordSettlementRules(req) {
+  const body = req.body || {};
+  const errors = [];
+
+  for (const field of ['from_user', 'to_user']) {
+    if (!Number.isSafeInteger(body[field]) || body[field] <= 0) {
+      errors.push({ field, message: `${field} must be the numeric id of a user` });
+    }
+  }
+  if (errors.length === 0 && body.from_user === body.to_user) {
+    errors.push({ field: 'to_user', message: 'A person cannot pay themselves' });
+  }
+
+  const amountMinor = money.parseMoney(body.amount);
+  if (amountMinor === null) {
+    errors.push({ field: 'amount', message: 'Amount must be a number with at most 2 decimals, e.g. "500.00"' });
+  } else if (amountMinor <= 0) {
+    errors.push({ field: 'amount', message: 'Amount must be greater than zero' });
+  } else if (amountMinor > money.MAX_AMOUNT_MINOR) {
+    errors.push({ field: 'amount', message: 'Amount is too large' });
+  }
+
+  if (body.note !== undefined && body.note !== null) {
+    if (!isString(body.note) || body.note.length > 200) {
+      errors.push({ field: 'note', message: 'Note must be text of at most 200 characters' });
+    }
+  }
+  return errors;
+}
+
 // GET /groups/:id/expenses?limit=20&offset=0
 function listExpensesQueryRules(req) {
   const { limit, offset } = req.query;
@@ -166,4 +197,5 @@ module.exports = {
   addMemberRules,
   expenseRules,
   listExpensesQueryRules,
+  recordSettlementRules,
 };
