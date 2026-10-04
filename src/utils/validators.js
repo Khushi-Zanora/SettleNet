@@ -184,6 +184,27 @@ function listExpensesQueryRules(req) {
   return errors;
 }
 
+const EXPORT_SECTIONS = ['all', 'expenses', 'balances', 'payments', 'plan'];
+
+// GET /groups/:id/history?limit=&offset=&action=
+function historyQueryRules(req) {
+  const errors = listExpensesQueryRules(req); // same limit/offset rules as expenses
+  const { action } = req.query;
+  if (action !== undefined && !(isString(action) && /^[A-Z_]{3,50}$/.test(action))) {
+    errors.push({ field: 'action', message: 'action must be an upper-case action name such as EXPENSE_CREATED' });
+  }
+  return errors;
+}
+
+// GET /groups/:id/export?section=
+function exportQueryRules(req) {
+  const { section } = req.query;
+  if (section !== undefined && !(isString(section) && EXPORT_SECTIONS.includes(section))) {
+    return [{ field: 'section', message: `section must be one of: ${EXPORT_SECTIONS.join(', ')}` }];
+  }
+  return [];
+}
+
 module.exports = {
   isString,
   isNonEmptyString,
@@ -198,4 +219,6 @@ module.exports = {
   expenseRules,
   listExpensesQueryRules,
   recordSettlementRules,
+  historyQueryRules,
+  exportQueryRules,
 };
