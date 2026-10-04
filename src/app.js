@@ -6,6 +6,7 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const groupRoutes = require('./routes/groupRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
+const settlementRoutes = require('./routes/settlementRoutes');
 
 const app = express();
 
@@ -35,10 +36,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api', expenseRoutes);
+app.use('/api', settlementRoutes);
 /*
- * Added in later parts:
- *   Part 5: app.use('/api', settlementRoutes);
- *   Part 6: app.use('/api', historyRoutes);
+ * Added in Part 6:
+ *   app.use('/api', historyRoutes);
  */
 
 // These two MUST stay last: unmatched routes -> 404, then every error -> JSON.
