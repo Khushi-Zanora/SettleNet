@@ -54,6 +54,28 @@ function loginRules(req) {
   return errors;
 }
 
+function createGroupRules(req) {
+  const { name, description } = req.body || {};
+  const errors = [];
+
+  if (!isNonEmptyString(name) || name.trim().length > 100) {
+    errors.push({ field: 'name', message: 'Group name is required (max 100 characters)' });
+  }
+  // description is optional, but if it is sent it must be a short string
+  if (description !== undefined && description !== null) {
+    if (!isString(description) || description.length > 500) {
+      errors.push({ field: 'description', message: 'Description must be text of at most 500 characters' });
+    }
+  }
+  return errors;
+}
+
+function addMemberRules(req) {
+  const { email } = req.body || {};
+  if (!isValidEmail(email)) return [{ field: 'email', message: 'A valid email is required' }];
+  return [];
+}
+
 module.exports = {
   isString,
   isNonEmptyString,
@@ -62,4 +84,6 @@ module.exports = {
   passwordProblems,
   registerRules,
   loginRules,
+  createGroupRules,
+  addMemberRules,
 };
