@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/* Dark mode is the "dark" class on <html>, set by ThemeContext. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #FAF6F0;
+  --surface: #FFFFFF;
+  --sunken: #F3EDE3;
+  --line: #E7DFD2;
+  --text: #2B2622;
+  --text-muted: #6F665C;
+  --primary: #1F7A6D;
+  --primary-hover: #17645A;
+  --primary-soft: #DDF0EB;
+  --on-primary: #FFFFFF;
+  --gain: #2E7D4F;
+  --gain-soft: #E1F2E6;
+  --owe: #C2492F;
+  --owe-soft: #FBE4DD;
+  --elev: 0 1px 2px rgba(60, 40, 20, 0.06), 0 4px 14px rgba(60, 40, 20, 0.07);
+}
+
+.dark {
+  --bg: #1A1714;
+  --surface: #242019;
+  --sunken: #2E2921;
+  --line: #3A342B;
+  --text: #F1EAE0;
+  --text-muted: #A89F92;
+  --primary: #4FB8A5;
+  --primary-hover: #6CCBB9;
+  --primary-soft: #1F3A35;
+  --on-primary: #10211E;
+  --gain: #6CC28A;
+  --gain-soft: #1F3426;
+  --owe: #F08A72;
+  --owe-soft: #3D2620;
+  --elev: 0 1px 0 rgba(0, 0, 0, 0.3); /* in dark mode, borders do the work */
+}
+
+@theme inline {
+  --color-page: var(--bg);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-line: var(--line);
+  --color-ink: var(--text);
+  --color-ink-muted: var(--text-muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
+  --color-gain: var(--gain);
+  --color-gain-soft: var(--gain-soft);
+  --color-owe: var(--owe);
+  --color-owe-soft: var(--owe-soft);
+  --radius-card: 12px;
+  --radius-field: 10px;
+  --shadow-soft: var(--elev);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer base {
+  *, ::before, ::after { border-color: var(--line); }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
+  }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+}
+
+/* Money columns line up when digits have equal width. */
+.money { font-variant-numeric: tabular-nums; }
+
+/* Subtle motion only. */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slide-in-left { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.anim-fade { animation: fade-in 0.18s ease-out; }
+.anim-drawer { animation: slide-in-left 0.2s ease-out; }
+.anim-rise { animation: rise 0.18s ease-out; }
+
+/* Respect "reduce motion", but keep spinners turning because they show progress. */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .animate-spin { animation-duration: 1s !important; animation-iteration-count: infinite !important; }
+}

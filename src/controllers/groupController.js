@@ -6,7 +6,7 @@ const createGroup = (req, res) => {
 };
 
 const listGroups = (req, res) => {
-  res.json({ data: { groups: groupService.listGroups(req.user.id) } });
+  res.json({ data: groupService.listGroups(req.user.id) });
 };
 
 const getGroup = (req, res) => {

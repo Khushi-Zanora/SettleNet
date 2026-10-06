@@ -6,3 +6,5 @@ data/
 *.db-wal
 .DS_Store
 npm-debug.log*
+client/node_modules/
+client/dist/

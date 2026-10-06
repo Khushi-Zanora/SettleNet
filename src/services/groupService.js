@@ -2,6 +2,7 @@ const db = require('../config/db');
 const audit = require('./auditService');
 const balanceService = require('./balanceService');
 const { conflict, forbidden, notFound } = require('../utils/errors');
+const money = require('../utils/money');
 
 // NOTE: "groups" is quoted everywhere because GROUPS is a reserved word in SQLite.
 const findGroup = db.prepare('SELECT id, name, description, created_by, created_at FROM "groups" WHERE id = ?');
@@ -111,8 +112,33 @@ function createGroup(userId, { name, description }) {
   return getGroupDetails(groupId, userId);
 }
 
+// Returns the user's groups, each with their own balance, plus overall totals.
+// Balances come from balanceService, the single source of truth.
 function listGroups(userId) {
-  return listGroupsForUser.all(userId);
+  let owedMinor = 0; // across all groups: what others owe me
+  let oweMinor = 0;  // across all groups: what I owe others
+
+  const groups = listGroupsForUser.all(userId).map((g) => {
+    const net = balanceService.getNetBalanceMinor(g.id, userId);
+    if (net > 0) owedMinor += net;
+    if (net < 0) oweMinor += -net;
+    return {
+      ...g,
+      my_balance_minor: net,
+      my_balance: money.formatMinor(net),
+      my_status: net > 0 ? 'is_owed' : net < 0 ? 'owes' : 'settled',
+    };
+  });
+
+  return {
+    groups,
+    totals: {
+      total_owed_minor: owedMinor,
+      total_owed: money.formatMinor(owedMinor),
+      total_owe_minor: oweMinor,
+      total_owe: money.formatMinor(oweMinor),
+    },
+  };
 }
 
 function addMember(groupId, actorId, email) {
