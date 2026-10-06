@@ -5,6 +5,9 @@ const VARIANTS = {
   danger: 'bg-owe text-on-primary hover:opacity-90',
 };
 
+export const buttonClass = (variant = 'primary', extra = '') =>
+  `inline-flex min-h-11 items-center justify-center gap-2 rounded-field px-4 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${VARIANTS[variant]} ${extra}`;
+
 export default function Button({
   variant = 'primary',
   loading = false,
@@ -15,12 +18,7 @@ export default function Button({
   ...props
 }) {
   return (
-    <button
-      type={type}
-      disabled={disabled || loading}
-      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-field px-4 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${VARIANTS[variant]} ${className}`}
-      {...props}
-    >
+    <button type={type} disabled={disabled || loading} className={buttonClass(variant, className)} {...props}>
       {loading && (
         <span
           className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"

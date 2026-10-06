@@ -40,6 +40,9 @@ const PATHS = {
       <path d="M12 11v5M12 8v.01" />
     </>
   ),
+    chevronRight: <path d="M9 5l7 7-7 7" />,
+  arrowIn: <path d="M7 7l10 10M17 8v9H8" />,
+  arrowOut: <path d="M7 17L17 7M8 7h9v9" />,
 };
 
 export default function Icon({ name, size = 20, className = '' }) {
