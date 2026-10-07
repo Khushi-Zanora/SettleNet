@@ -31,10 +31,10 @@ export default function CreateGroup() {
     try {
       const body = { name: form.name };
       if (form.description.trim()) body.description = form.description;
-      await api.post('/groups', body, { idempotencyKey: idempotencyKey.current });
+      const data = await api.post('/groups', body, { idempotencyKey: idempotencyKey.current });
       reload(); // refresh the sidebar and the dashboard
       toast.success('Group created');
-      navigate('/'); // Step 3 changes this to the new group's page
+      navigate(`/groups/${data.group.id}`); // Step 3 changes this to the new group's page
     } catch (err) {
       const fields = fieldErrorsFrom(err);
       setErrors(fields);

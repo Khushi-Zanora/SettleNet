@@ -43,6 +43,18 @@ const PATHS = {
     chevronRight: <path d="M9 5l7 7-7 7" />,
   arrowIn: <path d="M7 7l10 10M17 8v9H8" />,
   arrowOut: <path d="M7 17L17 7M8 7h9v9" />,
+  receipt: <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3zM9 8h6M9 12h6" />,
+  chart: <path d="M5 20V10M12 20V4M19 20v-7" />,
+  download: <path d="M12 4v11M7 11l5 5 5-5M5 20h14" />,
+  trash: <path d="M4 7h16M10 7V4h4v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />,
+  pencil: <path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4" />,
+  userPlus: (
+    <>
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M19 8v6M16 11h6" />
+    </>
+  ),
+  arrowLeft: <path d="M19 12H5M11 6l-6 6 6 6" />,
 };
 
 export default function Icon({ name, size = 20, className = '' }) {
