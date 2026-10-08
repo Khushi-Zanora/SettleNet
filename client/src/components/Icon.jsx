@@ -55,6 +55,18 @@ const PATHS = {
     </>
   ),
   arrowLeft: <path d="M19 12H5M11 6l-6 6 6 6" />,
+    wallet: (
+    <>
+      <path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7zM4 7l2-3h10l1 3" />
+      <circle cx="16" cy="13.5" r="1" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
 };
 
 export default function Icon({ name, size = 20, className = '' }) {

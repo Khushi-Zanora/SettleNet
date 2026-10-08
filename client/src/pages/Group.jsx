@@ -3,15 +3,19 @@ import Alert from '../components/Alert';
 import { buttonClass } from '../components/Button';
 import Icon from '../components/Icon';
 import Tabs from '../components/Tabs';
-import { useFetch } from '../hooks/useFetch';
 import { useGroups } from '../context/GroupsContext';
+import { useFetch } from '../hooks/useFetch';
 import BalancesTab from './group/BalancesTab';
 import ExpensesTab from './group/ExpensesTab';
+import HistoryTab from './group/HistoryTab';
 import MembersTab from './group/MembersTab';
+import SettleTab from './group/SettleTab';
 
 const TABS = [
   { id: 'expenses', label: 'Expenses', icon: 'receipt' },
   { id: 'balances', label: 'Balances', icon: 'chart' },
+  { id: 'settle', label: 'Settle up', icon: 'wallet' },
+  { id: 'history', label: 'History', icon: 'clock' },
   { id: 'members', label: 'Members', icon: 'users' },
 ];
 
@@ -82,6 +86,8 @@ function GroupView({ id }) {
       <div id="tabpanel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="mt-5">
         {tab === 'expenses' && <ExpensesTab group={group} />}
         {tab === 'balances' && <BalancesTab group={group} />}
+        {tab === 'settle' && <SettleTab group={group} />}
+        {tab === 'history' && <HistoryTab group={group} />}
         {tab === 'members' && <MembersTab group={group} onChanged={onChanged} />}
       </div>
     </div>

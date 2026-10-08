@@ -29,3 +29,16 @@ export function dateHeading(ymd) {
   if (ymd === localDateString(yesterday)) return 'Yesterday';
   return formatYmd(ymd);
 }
+
+// SQLite UTC timestamp -> the user's local YYYY-MM-DD (for grouping history by day)
+export function sqliteToLocalYmd(sqliteTimestamp) {
+  const date = new Date(`${sqliteTimestamp.replace(' ', 'T')}Z`);
+  return Number.isNaN(date.getTime()) ? '' : localDateString(date);
+}
+
+// SQLite UTC timestamp -> "3:45 pm" in the user's locale
+export function formatTime(sqliteTimestamp) {
+  const date = new Date(`${sqliteTimestamp.replace(' ', 'T')}Z`);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+}
