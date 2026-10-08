@@ -23,8 +23,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// // Serve the frontend (added in the final phase) from /public.
-// app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Serve the built React app (client/dist) when it exists.
 const clientDist = path.join(__dirname, '..', 'client', 'dist');
